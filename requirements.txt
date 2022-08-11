@@ -1,7 +1,7 @@
 numpy==1.23.1
-scikit-image==0.14.0
+scikit-image==0.19.3
 torch==1.7.1
-torchvision==0.19.3
+torchvision==0.8.2
 pillow==8.1.1
 opencv-python
 paddlepaddle
