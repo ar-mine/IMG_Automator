@@ -2,9 +2,12 @@ numpy==1.23.1
 scikit-image==0.19.3
 torch==1.7.1
 torchvision==0.8.2
-pillow==8.1.1
-opencv-python
+pillow~=9.2.0
+opencv-python~=4.6.0.66
 paddlepaddle
-paddlehub
-gradio
-dearpygui
+paddlehub~=2.2.0
+gradio~=3.1.0
+dearpygui~=1.6.2
+ConfigArgParse~=1.5.3
+matplotlib~=3.5.2
+hydra-core==1.2.0

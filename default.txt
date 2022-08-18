@@ -1,3 +1,0 @@
-inputdir = /home/armine/ROS2/franka_ws/record/input
-tempdir = /home/armine/ROS2/franka_ws/record/temp
-resultdir = /home/armine/ROS2/franka_ws/record/output

@@ -1,0 +1,5 @@
+path:
+  input: /home/armine/ROS2/franka_ws/record/input
+  temp: /home/armine/ROS2/franka_ws/record/temp
+  output: /home/armine/ROS2/franka_ws/record/output
+  video: /home/armine/ROS2/franka_ws/record/input
