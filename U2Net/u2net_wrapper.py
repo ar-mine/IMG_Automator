@@ -144,6 +144,8 @@ class U2net:
                                      num_workers=1)
 
     def change_image_dir(self, image_dir: str):
+        if not os.path.exists(image_dir):
+            os.makedirs(image_dir)
         self.image_dir = image_dir
 
     def change_temp_dir(self, temp_dir: str):
@@ -159,7 +161,7 @@ class U2net:
     def process(self, callback=None):
         self.load_images()
         for i_test, data_test in enumerate(self.dataloader):
-            self.current_idx = i_test
+            self.current_idx = i_test+1
             print("inferencing:", self.img_name_list[i_test].split(os.sep)[-1])
 
             inputs_test = data_test['image']
@@ -184,8 +186,6 @@ class U2net:
 
             if callback is not None:
                 callback()
-
-        self.current_idx = self.total_images
 
         if callback is not None:
             callback()
