@@ -20,6 +20,21 @@ from data_loader import SalObjDataset
 from model import U2NET  # full size version 173.6 MB
 from model import U2NETP  # small version u2net 4.7 MB
 
+import timeit
+
+
+def clock(func):
+    def clocked(*args, **kwargs):
+        start = timeit.default_timer()
+        res = func(*args, **kwargs)
+        run_time = timeit.default_timer() - start
+        func_name = func.__name__
+        arg_str = ', '.join(repr(arg) for arg in args)
+        print('调用>>>%s(%s)   返回值>>>%r   耗时>>>%0.8fs' % (func_name, arg_str, res, run_time))
+        return res
+
+    return clocked
+
 
 # normalize the predicted SOD probability map
 def normPRED(d):
@@ -42,7 +57,7 @@ def save_output_overlay(image_name, mask, d_dir, o_dir):
     image_ = Image.fromarray(image_np).convert('RGB')
     background = Image.fromarray(np.zeros((image_np.shape[0], image_np.shape[1]))).convert('RGB')
     img = Image.fromarray(mask_np * 255).convert('L')
-    img_mask = img.resize((image_np.shape[1], image_np.shape[0]), resample=Image.Resampling.BILINEAR).\
+    img_mask = img.resize((image_np.shape[1], image_np.shape[0]), resample=Image.Resampling.BILINEAR). \
         convert('1').filter(ImageFilter.MedianFilter(5))
     img_composite = Image.composite(image_, background, img_mask)
 
@@ -50,10 +65,15 @@ def save_output_overlay(image_name, mask, d_dir, o_dir):
     image_name = image_name.split(os.sep)[-1]
     # left, top, right, bottom
     box = img_mask.getbbox()
-    box_center = [(box[0]+box[2])//2, (box[1]+box[3])//2]
-    gap = max(image_np.shape)*0.02
-    edge_size = (max(box[2]-box[0], box[3]-box[1])+gap)//2
-    box_tuned = [box_center[0]-edge_size, box_center[1]-edge_size, box_center[0]+edge_size, box_center[1]+edge_size]
+    box_center = [(box[0] + box[2]) // 2, (box[1] + box[3]) // 2]
+    gap = max(image_np.shape) * 0.02
+    edge_size = (max(box[2] - box[0], box[3] - box[1]) + gap) // 2
+    box_tuned = [box_center[0] - edge_size, box_center[1] - edge_size, box_center[0] + edge_size,
+                 box_center[1] + edge_size]
+    if box_tuned[0] <= 0 or box_tuned[1] <= 0 or \
+       box_tuned[2] >= image_np.shape[1] or box_tuned[3] >= image_np.shape[0]:
+        # If the cropped region is closed to the edge, drop it!
+        return
     img_cropped = img_composite.transform((128, 128), Image.Transform.EXTENT, box_tuned, Image.Resampling.BILINEAR)
     mask_cropped = img_mask.transform((128, 128), Image.Transform.EXTENT, box_tuned, Image.Resampling.BILINEAR)
 
@@ -93,8 +113,8 @@ def save_output(image_name, pred, d_dir, threshold=128):
         os.mkdir(os.path.join(d_dir, 'mask'))
     if not os.path.exists(os.path.join(d_dir, 'rgb')):
         os.mkdir(os.path.join(d_dir, 'rgb'))
-    imo.save(os.path.join(d_dir, 'mask', imidx+'.png'))
-    img_rgb.save(os.path.join(d_dir, 'rgb', imidx+'.png'))
+    imo.save(os.path.join(d_dir, 'mask', imidx + '.png'))
+    img_rgb.save(os.path.join(d_dir, 'rgb', imidx + '.png'))
 
 
 class U2net:
@@ -113,22 +133,23 @@ class U2net:
         self.total_images = -1
         self.current_idx = -1
 
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda:0")
+        else:
+            self.device = torch.device("cpu")
+
     def load_model(self):
         if self.model_name == 'u2net':
             print("...load U2NET---173.6 MB")
             self.net = U2NET(3, 1)
         elif self.model_name == 'u2netp':
             print("...load U2NEP---4.7 MB")
-            self.net = U2NETP(3, 1)
-        if torch.cuda.is_available():
-            self.net.load_state_dict(torch.load(self.model_dir))
-            self.net.cuda()
-        else:
-            self.net.load_state_dict(torch.load(self.model_dir, map_location='cpu'))
+            self.net = U2NETP(3, 1).to(self.device)
+        self.net.load_state_dict(torch.load(self.model_dir, map_location=self.device))
         self.net.eval()
 
     def load_images(self):
-        # Only .jpg and .png images are processed
+        # Only *.jpg and *.png images are processed
         self.img_name_list = glob.glob(self.image_dir + os.sep + '*.jpg')
         self.img_name_list.extend(glob.glob(self.image_dir + os.sep + '*.png'))
         print("Detect totally {} images!".format(len(self.img_name_list)))
@@ -146,34 +167,13 @@ class U2net:
                                      shuffle=False,
                                      num_workers=1)
 
-    def change_image_dir(self, image_dir: str):
-        if not os.path.exists(image_dir):
-            os.makedirs(image_dir)
-        self.image_dir = image_dir
-
-    def change_temp_dir(self, temp_dir: str):
-        if not os.path.exists(temp_dir):
-            os.makedirs(temp_dir)
-        self.temp_dir = temp_dir
-
-    def change_result_dir(self, result_dir: str):
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-        self.result_dir = result_dir
-
     def process(self, callback=None):
         self.load_images()
         for i_test, data_test in enumerate(self.dataloader):
-            self.current_idx = i_test+1
-            print("inferencing:", self.img_name_list[i_test].split(os.sep)[-1])
+            self.current_idx = i_test + 1
+            print("Reasoning:", self.img_name_list[i_test].split(os.sep)[-1])
 
-            inputs_test = data_test['image']
-            inputs_test = inputs_test.type(torch.FloatTensor)
-
-            if torch.cuda.is_available():
-                inputs_test = Variable(inputs_test.cuda())
-            else:
-                inputs_test = Variable(inputs_test)
+            inputs_test = data_test['image'].type(torch.FloatTensor).to(self.device)
 
             with torch.no_grad():
                 d1, d2, d3, d4, d5, d6, d7 = self.net(inputs_test)
@@ -192,6 +192,21 @@ class U2net:
 
         if callback is not None:
             callback()
+
+    def change_image_dir(self, image_dir: str):
+        if not os.path.exists(image_dir):
+            os.makedirs(image_dir)
+        self.image_dir = image_dir
+
+    def change_temp_dir(self, temp_dir: str):
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
+        self.temp_dir = temp_dir
+
+    def change_result_dir(self, result_dir: str):
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        self.result_dir = result_dir
 
 
 if __name__ == '__main__':
