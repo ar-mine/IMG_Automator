@@ -64,6 +64,7 @@ class U2netGui:
                                                                            app_data['file_path_name']),
                                 tag="{}_path_dialog_id".format(key), default_path=dpg.get_value("{}_path".format(key)))
 
+        # Register widgets in window
         with dpg.window(label="Template-Generation", width=600):
             def separate_callback():
                 dpg.set_value("separate_success", "Separating")
@@ -73,10 +74,17 @@ class U2netGui:
                             interval=dpg.get_value("separate_rate"))
                 dpg.set_value("separate_success", "Complete!")
 
+            def open_creator(path):
+                def creator():
+                    os.system("explorer {}".format(path))
+                return creator
+
             for key in PathEnum:
                 with dpg.group(horizontal=True):
                     dpg.add_input_text(source="{}_path".format(key), width=350)
                     dpg.add_button(label="Select", callback=lambda: dpg.show_item("{}_path_dialog_id".format(key)))
+                    open_temp = open_creator(dpg.get_value("{}_path".format(key)))
+                    dpg.add_button(label="Open", callback=open_temp)
                     dpg.add_text("{} folder".format(key))
                 if key == "video":
                     with dpg.group(horizontal=True):
