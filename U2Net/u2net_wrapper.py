@@ -128,8 +128,11 @@ class U2net:
         self.net.eval()
 
     def load_images(self):
-        self.img_name_list = glob.glob(self.image_dir + os.sep + '*')
-        print(self.img_name_list)
+        # Only .jpg and .png images are processed
+        self.img_name_list = glob.glob(self.image_dir + os.sep + '*.jpg')
+        self.img_name_list.extend(glob.glob(self.image_dir + os.sep + '*.png'))
+        print("Detect totally {} images!".format(len(self.img_name_list)))
+
         self.total_images = len(self.img_name_list)
         self.current_idx = 0
 
