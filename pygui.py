@@ -2,6 +2,7 @@ import os
 import glob
 import cv2
 import shutil
+from sys import platform
 from skimage.io import imsave
 import omegaconf
 from omegaconf import DictConfig
@@ -75,9 +76,18 @@ class U2netGui:
                 dpg.set_value("separate_success", "Complete!")
 
             def open_creator(path):
-                def creator():
+                def creator_win():
                     os.system("explorer {}".format(path))
-                return creator
+
+                def creator_linux():
+                    os.system("xdg-open {}".format(path))
+
+                if platform == "linux" or platform == "linux2":
+                    return creator_linux
+                elif platform == "darwin":
+                    pass
+                elif platform == "win32":
+                    return creator_win
 
             for key in PathEnum:
                 with dpg.group(horizontal=True):
