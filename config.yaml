@@ -1,5 +1,5 @@
 path:
-  input: /home/armine/ROS2/franka_ws/record/input
-  temp: /home/armine/ROS2/franka_ws/record/temp
-  result: /home/armine/ROS2/franka_ws/record/output
-  video: /home/armine/ROS2/franka_ws/record/input
+  input: ./dataset/input
+  temp: ./dataset/temp
+  result: ./dataset/output
+  video: ./dataset/video
