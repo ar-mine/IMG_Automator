@@ -20,21 +20,30 @@ class U2netGui:
         self.u2net = U2net()
         self.u2net.load_model()
 
-        dpg.create_context()
+        if cfg["headless"]:
+            dpg.create_context()
 
-        # Pre value setting
-        self.value_register()
+            # Pre value setting
+            self.value_register()
 
-        # Register widgets
-        self.register_dpg()
+            # Register widgets
+            self.register_dpg()
 
-        # Gui pre-init
-        dpg.create_viewport()
-        dpg.setup_dearpygui()
-        dpg.show_viewport()
+            # Gui pre-init
+            dpg.create_viewport()
+            dpg.setup_dearpygui()
+            dpg.show_viewport()
 
-        # Gui start
-        dpg.start_dearpygui()
+            # Gui start
+            dpg.start_dearpygui()
+
+        else:
+            # Write paths saved in GUI to U2Net model class
+            self.u2net.change_image_dir(dpg.get_value(cfg["path"]["input"]))
+            self.u2net.change_temp_dir(dpg.get_value(cfg["path"]["temp"]))
+            self.u2net.change_result_dir(dpg.get_value(cfg["path"]["result"]))
+
+            self.u2net.process()
 
     def value_register(self):
         with dpg.value_registry():

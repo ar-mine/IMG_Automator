@@ -3,3 +3,5 @@ path:
   temp: E:\Dataset\record\temp
   result: E:\Dataset\record\output
   video: E:\Dataset\record\input
+
+headless: true
