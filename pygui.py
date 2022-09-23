@@ -39,9 +39,9 @@ class U2netGui:
 
         else:
             # Write paths saved in GUI to U2Net model class
-            self.u2net.change_image_dir(dpg.get_value(cfg["path"]["input"]))
-            self.u2net.change_temp_dir(dpg.get_value(cfg["path"]["temp"]))
-            self.u2net.change_result_dir(dpg.get_value(cfg["path"]["result"]))
+            self.u2net.change_image_dir(cfg["path"]["input"])
+            self.u2net.change_temp_dir(cfg["path"]["temp"])
+            self.u2net.change_result_dir(cfg["path"]["result"])
 
             self.u2net.process()
 
