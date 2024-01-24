@@ -1,5 +1,15 @@
+defaults:
+  - _self_
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
 path:
-  input: ./dataset/input
-  temp: ./dataset/temp
-  result: ./dataset/output
-  video: ./dataset/video
+  input: /home/armine/Dataset_link/input
+  temp: /home/armine/Dataset_link/temp
+  result: /home/armine/Dataset_link/output
+  video: /home/armine/Dataset_link/video

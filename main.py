@@ -3,7 +3,7 @@ from pygui import U2netGui
 
 
 # @hydra.main(version_base=None, config_path=".", config_name="config")
-@hydra.main(version_base=None, config_path=".", config_name="config-win")
+@hydra.main(version_base=None, config_path=".", config_name="config")
 def main(cfg):
     U2netGui(cfg)
 

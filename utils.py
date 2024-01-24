@@ -8,7 +8,8 @@ from skimage.io import imsave
 def video2image(input_dir, output_dir, interval=30, image_size: Optional[int] = None, transpose=False):
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
-    video_name_list = glob.glob(input_dir + os.sep + '*.mp4')
+    video_name_list = glob.glob(input_dir + os.sep + '*')
+    # video_name_list = glob.glob(input_dir + os.sep + '*.mp4')
     count = 0
     for input_video in video_name_list:
         print(f'split video {input_video} into images ...')
