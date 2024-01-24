@@ -9,7 +9,10 @@ hydra:
     dir: .
 
 path:
-  input: .\dataset\input
-  temp: .\dataset\temp
-  result: .\dataset\output
-  video: .\dataset\video
+  input: E:\Dataset\record\input
+  temp: E:\Dataset\record\temp
+  result: E:\Dataset\record\output
+  video: E:\Dataset\record\input
+
+headless: true
+
