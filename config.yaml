@@ -9,11 +9,10 @@ hydra:
     dir: .
 
 path:
-
   input: /home/armine/Dataset_link/input
   temp: /home/armine/Dataset_link/temp
   result: /home/armine/Dataset_link/output
   video: /home/armine/Dataset_link/video
 
-headless: true
+headless: false
 

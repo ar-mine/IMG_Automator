@@ -20,7 +20,7 @@ class U2netGui:
         self.u2net = U2net()
         self.u2net.load_model()
 
-        if cfg["headless"]:
+        if not cfg["headless"]:
             dpg.create_context()
 
             # Pre value setting
