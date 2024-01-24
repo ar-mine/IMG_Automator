@@ -6,7 +6,6 @@ import numpy as np
 import torch
 from PIL import Image, ImageFilter
 from skimage import io
-from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import transforms  # , utils
 
@@ -56,7 +55,7 @@ def save_output_overlay(image_name, mask, d_dir, o_dir):
     box_tuned = [box_center[0] - edge_size, box_center[1] - edge_size, box_center[0] + edge_size,
                  box_center[1] + edge_size]
     if box_tuned[0] <= 0 or box_tuned[1] <= 0 or \
-       box_tuned[2] >= image_np.shape[1] or box_tuned[3] >= image_np.shape[0]:
+            box_tuned[2] >= image_np.shape[1] or box_tuned[3] >= image_np.shape[0]:
         # If the cropped region is closed to the edge, drop it!
         return
     img_cropped = img_composite.transform((128, 128), Image.Transform.EXTENT, box_tuned, Image.Resampling.BILINEAR)
