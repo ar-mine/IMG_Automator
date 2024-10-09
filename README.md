@@ -8,8 +8,14 @@ for pre-processing images to generate templates that are used as dataset.
 
 ## Installation
 The source codes have been tested with `python3.8`, 
-and the packages needed are written into the `requirements.txt`.
-
+Install pytorch according to your system:
+```
+pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu121
+```
+Install dependencies:
+```
+pip install -r requirements.txt
+```
 You can just use `git clone https://github.com/ar-mine/IMG_Automator.git` to download the whole repo.
 
 ## Usage
